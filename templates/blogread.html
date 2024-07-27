@@ -1,0 +1,158 @@
+{% extends "base.html" %} 
+{% load static %}
+{% load extras %} 
+{% block link %}
+<link rel="stylesheet" href="{% static 'css/blogread.css' %}" />
+{% endblock link %}
+{% block style %}
+{% endblock style %} 
+{% block body %}
+<div class="content">
+  <div class="container">
+    <div class="card text-center">
+      <div class="card-header">
+        <div style="display: flex">
+          <h4 class="blogtitle">{{ blog.title }} </h4>   
+        </div>
+          <a href="/blogs/authorpage/{{ blog.author }}" type="submit" class="author"><h6 class="author">{{ blog.author }}</h6></a>
+        </br>
+        <hr class="divider">
+        <small class="blogmeta"
+          ><span>{{ blog.pub_date.date }}</span> | {{post.category}} | views :{{ blog.views }} | like:{{ blog.likes }} | share: {{blog.share}} | comments :{{ comments.count }}</small>
+      </div>
+      <div class="card-body">
+        <div style="font-size:large;">{{ blog.content|safe }}</div>
+      </div>
+      <div class="card-footer text-muted gap-4" style="display:flex;">
+          <button class="btn btn-outline-primary" onclick="like()"><i class="fa fa-thumbs-up" aria-hidden="true"></i></button>
+        <p id="likeCount"  style="text-align:center; margin-top:7px; margin-bottom:3px;">{{blog.likes}}</p>
+      {% comment %} popup {% endcomment %}
+      <button type="button" class="btn btn-primary" onclick="share()" data-bs-toggle="modal" data-bs-target="#exampleModal">Share</button>
+      <p id="shareCount"  style="text-align:center; margin-top:7px; margin-bottom:3px;">{{blog.share}}</p>
+      <div class="modal fade popup" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="top:200px;">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Share</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Share this link via</p>
+              <div style="display: flex; justify-content:center;" >
+                  <a href="whatsapp://send?text={{blog.title}}%20-by%20{{blog.author}}%20-%20https://anneshon.in/blogs/blogread/{{blog.id}}" class="wa2" target="_blank">
+                    <i class="fa fa-whatsapp "></i>
+                  </a>
+                  <a href="https://www.facebook.com/sharer/sharer.php?u=https://anneshon.in/blogs/blogread/{{blog.id}}&quote={{blog.title}}-by-{{blog.author}}" class="fb2" target="_blank">
+                    <i class="fa fa-facebook "></i>
+                  </a>
+              </div>
+              <p>Or copy link</p>
+              <div class="field">
+                <i class="url-icon uil uil-link"></i>
+                <input type="text" readonly value="https://anneshon.in/blogs/blogread/{{blog.id}}">
+                <button class="copy">Copy</button>
+              </div>
+              </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+    {% comment %} comment {% endcomment %}
+    <div class="my-2">
+        {% if user.is_authenticated %}
+        <form action="/blogs/postComment" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <h2> Comments ({{comments.count}}) </h2>
+                <label for="exampleInputEmail1">Post Comment </label>
+                <input type="text" class="form-control" name="comment" placeholder="Enter comment here">
+            </div>
+            <input type="hidden" name="postSno" value="{{ blog.id }}">
+            <input type="hidden" name="parentSno" value="">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        {% else %}
+        <div class="form-group">
+            <label for="exampleInputEmail1">Post Comment </label>
+            <input
+            class="form-control"
+            id="exampleFormControlTextarea1"
+            rows="3"
+            placeholder="Please login to post a comment"
+            data-bs-toggle="modal" data-bs-target="#loginModal"
+            ></a>
+            <button type="submit" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#loginModal">Submit</button>
+        </div>
+        {% endif %}
+    </div>
+    {% for comment in comments %}
+    <div class="row my-3">
+        <div class="col-md-1  ">
+        </div>
+        <div class="col-md-11 ">
+          <div class="card">
+            <div class="card-header">
+              <span>{{comment.user.first_name}} </span> <span> {{comment.user.last_name}} </span>  <span>  --{{comment.timestamp }}</span>
+            </div>
+            <div class="card-body">
+              <p class="card-text">{{comment.comment}}</p>
+            </div>
+          </div>
+        </div>
+    </div>
+    {% endfor %}
+    </div> 
+  </div>
+</div>
+{% endblock body %}
+{% block script %}
+<script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+<script type="text/javascript">
+  // JavaScript function to increment like count
+function like() {
+    $.ajax({
+        type: "POST",
+        url: "/blogs/likescounter/{{ blog.id }}",  // URL of your Django view
+        data:{ csrfmiddlewaretoken: '{{ csrf_token }}' },   // Data sent to the server
+        success: function(data) {
+            $("#likeCount").text(data.like_count);
+        }
+    
+    });
+}
+// JavaScript function to increment share count
+function share() {
+    $.ajax({
+        type: "POST",
+        url: "/blogs/sharecounter/{{ blog.id }}",  // URL of your Django view
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+        success: function(data) {
+            $("#shareCount").text(data.share_count);
+        }
+    });
+}
+</script>
+<script>
+  popup = document.querySelector(".popup"),
+  field = popup.querySelector(".field"),
+  input = field.querySelector("input"),
+  copy = field.querySelector("button");
+  copy.onclick = ()=>{
+    input.select(); //select input value
+    if(document.execCommand("copy")){ //if the selected text copy
+      field.classList.add("active");
+      copy.innerText = "Copied";
+      setTimeout(()=>{
+          window.getSelection().removeAllRanges(); //remove selection from document
+          field.classList.remove("active");
+          copy.innerText = "Copy";
+      }, 3000);
+    }
+  }
+</script>
+{% endblock script %}

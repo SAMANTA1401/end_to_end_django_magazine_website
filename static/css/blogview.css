@@ -1,0 +1,10 @@
+.blogtitle{
+    color: rgb(21, 91, 182);
+}
+.blogmeta{
+    color: rgb(30, 157, 196);
+    float:left;
+}
+.card-header{
+    padding-bottom: 3px;
+}

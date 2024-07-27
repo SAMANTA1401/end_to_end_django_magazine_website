@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% comment %} {% block title %}Podcast{% endblock title %} {% endcomment %}
+{% load static %}
+{% block body %}
+<div class="content">
+  <h4 class="mb-2" style="text-align:center;"><strong>পডকাস্ট</strong></h4>
+  <div class="row">
+    {% for eachpodcast in podcasts  %}
+    <div class="col-sm-6 mb-2">
+        <div class="card">
+        <div class="card-body gap-2" style="display: flex;">
+            <div >
+                <img src={{ eachpodcast.img.url }} alt="" style="height: 120px; width:100px;">
+            </div> 
+            <div>
+                <h5 class="card-title">{{ eachpodcast.title }}- {{eachpodcast.authname}}</h5>
+                <p class="card-text" style="margin-bottom:3px">voice: {{eachpodcast.voice}}</p>
+                <small>{{eachpodcast.date}} | listener:<span id="listener">{{eachpodcast.listener}}</span> | click below to listten :</small>
+                <div class="gap-2"  style="display:flex; justify-content:center;">
+                    <p>spotify:</p><a href="{{eachpodcast.spotify_link}}" type="button" onclick="listn()" class="btn btn-outline-success rounded-circle" target="_blank"><i class="fab fa-spotify"></i></a>
+                    <p>youtube:</p><a href="{{eachpodcast.youtube_link}}" type="button" onclick="listn()"  class="btn btn-outline-danger rounded-circle" target="_blank"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock body %}
+{% block script %}
+{% for eachpodcast in podcasts %}
+<script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+<script type="text/javascript">
+  // JavaScript function to increment like count
+    function listn() {
+        $.ajax({
+            type: "POST",
+            url: "/listeners/{{ eachpodcast.id }}",  // URL of your Django view
+            data:{ csrfmiddlewaretoken: '{{ csrf_token }}' },   // Data sent to the server
+            success: function(data) {
+                $("#listener").text(data.listeners);
+            }
+        
+        });
+    }
+</script>
+{% endfor %}
+{% endblock script %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %} 
+{% block body%}
+<div class="content">
+  <h4 class="mb-2" style="text-align:center;"><strong>প্রকাশিত পত্রিকাগুলি</strong></h4>
+  <div class="row row-cols-1 row-cols-md-5 g-4">
+    {% for eachmagazine in magazines  %}
+    <div class="col">
+      <div class="card">
+        <img src="{{eachmagazine.img.url}}" class="card-img-top" alt="..." />
+        <div class="card-body" style="justify-content: center">
+          <h5 class="card-title">{{eachmagazine.description}}</h5>
+          <p class="card-text"><span></span> | <span>download :{{eachmagazine.download}}</span> | <span>price:{{eachmagazine.price}}</span></p>
+          <div
+            class="container-fluid gap-2"
+            style="display: flex; padding-left: 10px ; justify-content:center;" 
+          >
+            <form
+              method="POST"
+              action="{% url 'pdfview' %}"
+              enctype="multipart/form-data"
+            >
+              {% csrf_token %}
+              <button class="btn btn-outline-white" type="submit">
+                <input
+                  name="pdffile"
+                  value="{{ eachmagazine.pdffile }}"
+                  hidden
+                />
+              </button>
+            </form>
+            <form
+              method="POST"
+              action="{% url 'pdfdownload' %}"
+              enctype="multipart/form-data"
+            >
+              {% csrf_token %}
+              <button class="btn btn-outline-success" type="submit">
+                <input
+                  name="pdffile"
+                  value="{{ eachmagazine.pdffile }}"
+                  hidden
+                />download
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock body %}

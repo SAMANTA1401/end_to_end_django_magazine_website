@@ -1,0 +1,36 @@
+.blogmeta {
+    color: rgb(30, 157, 196);
+    float: left;
+}
+.author{
+    float: left;
+}
+.divider{
+   margin-top: 4px;
+   margin-bottom: 4px;
+}
+.fb2 {
+    width: 45px;
+    height: 45px;
+    background-color: rgb(35, 38, 212);
+    color: #FFF;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 25px;
+    box-shadow: 2px 2px 3px #999;
+    margin: 15px;
+    padding-top: 5px;
+}
+.wa2 {
+    width: 45px;
+    height: 45px;
+    background-color: rgb(29, 171, 16);
+    color: #FFF;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 25px;
+    box-shadow: 2px 2px 3px #999;
+    margin: 15px;
+    padding-top: 5px;
+}
+

@@ -1,0 +1,46 @@
+{% extends "base.html" %}  {% load
+static %} {% block style %} <link rel="stylesheet" href="{% static
+"css/blogview.css" %}"> {% endblock style %} {% block body %}
+<div class="content">
+  <section class="text-center">
+    <h4 class="mb-2"><strong>সমস্ত লেখাগুলি</strong></h4>
+    <div class="row">
+      {% for post in blogs %}
+      <div class="col-lg-4 col-md-6 mb-2">
+        <a
+          href="/blogs/blogread/{{ post.id }}"
+          class="btn"
+          role="button"
+          style="width: 100%"
+        >
+          <div class="card shadow border">
+            <div class="card-header">
+              <div style="display: flex; height: 35px">
+                <h5 class="blogtitle">{{ post.title }} -</h5>
+                <small>{{ post.author }}</small>
+              </div>
+              <small class="blogmeta"
+                ><span>{{ post.pub_date.date }}</span> | {{post.category}} |
+                views:{{ post.views}} | likes:{{ post.likes }} | share:
+                {{post.share}} | comments:{{post.comments}}</small
+              >
+            </div>
+            <div class="card-body">
+              <div
+                class="d-inline-block card-text text-truncate text-wrap"
+                style="max-width: 280px; max-height: 110px"
+              >
+                {{ post.content|safe }}
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% if not posts %}
+    <center></center>
+    {% endif %}
+  </section>
+</div>
+{% endblock body %}

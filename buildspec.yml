@@ -1,0 +1,29 @@
+version: 0.2
+
+env:
+  parameter-store:
+    DJANGO_SECRET_KEY : /anneshon/django_secret_key
+    DB_ENGINE : /anneshon/database/engine
+    DB_NAME : /anneshon/database/name
+    DB_USER : /anneshon/database/user
+    DB_PASSWORD : /anneshon/database/password
+    DB_HOST : /anneshon/database/host
+    DB_PORT : /anneshon/database/port
+    GOOGLE_CLIENT_ID : /anneshon/google/clientid
+    GOOGLE_CLIENT_SECRET: /anneshon/google/clientsecret
+    ADOBE_CLIENT_ID : /anneshon/google/clientid
+phases:
+  pre_build:
+    commands:
+      - echo Prebuild ops
+      - pip3 install -r requirements.txt
+  build:
+    commands:
+      - echo Building the application
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - '**/*'
+  # discard-paths: yes

@@ -1,0 +1,85 @@
+{% extends "base.html" %} 
+{% comment %} {% block title %}bloginput{% endblock title %} {% endcomment %}
+{% load static %}
+{% block link %}
+<script
+  src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+  integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+  crossorigin="anonymous"
+></script>
+<link
+  href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css"
+  rel="stylesheet"
+/>
+
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery.bangla@1/dist/jquery.bangla.js"></script> 
+{% endblock link %}
+{% block style %}
+<style>
+    @font-face {
+        font-family: rupasibangla;
+        src: url("{% static 'fonts/Ruposhi Bangla UI Uni.ttf' %}")
+    }
+    .note-editable {
+      font-family: rupasibangla;
+    }
+    #title{
+      font-family: rupasibangla;
+    }
+</style>
+{% endblock style %}
+{% block body %}
+<div class="content">
+  <div>
+    {% if user.is_authenticated %}
+    <div style="text-align:center; background-color:#5ee9e3; border-radius:3px;">
+      <h5>প্রিয় , <span>{{ user.first_name }}</span> <span>{{ user.last_name }}</span>  এখানে লিখুন...</h5>
+    </div>
+    <form action="/blogs/blogsave/" method="POST">
+    {% csrf_token %}
+      <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">বিষয়ের শিরোনাম*:</label>
+        <input type="text" class="form-control" name="title" id="title" placeholder="বিষয়ের শিরোনাম....">
+      </div>
+      <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label">বিষয়বস্তু*:</label></br>
+        <small>don't upload image more than 10MB!*</small>
+        <textarea  name="content" id="summernote" rows="3"></textarea>
+      </div>
+      <div class="mb-1">
+        <label for="exampleFormControlInput1" class="form-label">লেখক: {{user.first_name}}{{user.last_name}}</label>
+        <input type="text" class="form-control" id="exampleFormControlInput1" name="author" value="{{ user.first_name }} {{user.last_name}}" hidden>
+      </div>
+      <div class="mb-1">
+        <label for="exampleFormControlInput1" class="form-label">ইমেইল: {{ user.email }}</label>
+        <input type="email" class="form-control" id="" name="email" value="{{ user.email }}" hidden>
+      </div>
+      <button type="submit" class="btn btn-success ">Submit</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock body %} 
+{% block script %}
+<script>
+  $('#title').bangla();
+</script>
+<script>
+  $("#summernote").summernote({
+    placeholder: "এখানে লিখুন....",
+    tabsize: 2,
+    height: 250,
+    toolbar: [
+      ["style", ["style"]],
+      ["font", ["bold", "underline", "clear",'superscript', 'subscript']],
+      ["color", ["color"]],
+      ["para", ["ul", "ol", "paragraph"]],
+      ["table", ["table"]],
+      ["insert", ["link", "picture"]],
+      ["view", ["fullscreen", "help"]],
+    ],
+  });
+  $('.note-editable').bangla();
+</script>
+{% endblock script %}

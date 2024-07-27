@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+{% load static %}
+{% block link %}
+  <link href="{% static "css/home.css" %}" rel="stylesheet">
+  <link rel="stylesheet" href="{% static "css/owl.carousel.min.css" %}">
+  <link rel="stylesheet" href="{% static "css/owl.theme.default.min.css" %}">
+{% endblock link %}
+{% block style %}
+{% endblock style %} 
+{% block body %}
+{% load socialaccount %}
+<div class="content">
+  <div class="card bodyheader">
+    <div class="card-body">
+      <blockquote class="blockquote mb-0">
+        <p>যুক্তিবাদী-বিজ্ঞানমনস্কদের লেখালেখি, ম্যাগাজিন ও বইপত্রের অন্যতম প্ল্যাটফর্ম</p>
+      </blockquote>
+    </div>
+  </div>
+  <div class="row" style="display:flex;">
+    <div class="col-sm-8">
+      <div class="card text-center bookpage" style="padding-bottom: 0px; padding-top: 0px;
+      background-color: #FDD9C4; margin-bottom: 5px;">
+          <p style="padding:2px; margin-bottom:0px; font-size:20px">
+            Magazines store
+          </p>
+      </div>  
+      <div>
+        <div class="owl-carousel owl-theme">
+          {% for eachmagazine in magazines  %}
+            <div class="card  items">
+                  <div class="img-wrapper">
+                    <img src="{{media_url}}{{eachmagazine.img}}" class="d-block w-100" alt="..." style="height: 170px ; width:100px;" />
+                  </div>
+                  <div class="card-body text">
+                    <p class="card-title text">{{eachmagazine.description}}</p>
+                    <div class="card-text text">
+                      <span></span> | <span>download:{{eachmagazine.download}}</span> | <span>price:{{eachmagazine.price}}</span>
+                    </div>
+                    <div class="container-fluid gap-3" style="display: flex; padding-left:7px; justify-content:center;">
+                      <form method= "POST" action="{% url 'pdfview' %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                          <button class="btn btn-outline-white" type="submit"><input name="pdffile" value="{{ eachmagazine.pdffile }}"
+                          hidden></button>
+                      </form>
+                      <form method= "POST" action="{% url 'pdfdownload' %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                          <button class="btn btn-outline-info" type="submit"><input name="pdffile" value="{{ eachmagazine.pdffile }}"
+                          hidden>download</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="card text-center page">
+        <div class="">
+          <p style="font-size:20px">
+            এবার থেকে আপনার যুক্তিবাদী লেখাগুলি ওয়েবসাইটে সংরক্ষণ করুন।
+          </p>
+        </div>
+      </div>
+      <div class=" userinput" style="font-size:20px">
+        {% if user.is_authenticated %}
+        <label for="exampleFormControlTextarea1" class="form-label">প্রিয় মুক্তচিন্তক: <span>{{user.first_name}}</span><span> {{user.last_name}}</span></label>
+        <a class="navbar-brand" href="/blogs/bloginput">
+        <input
+          class="form-control"
+          id="exampleFormControlTextarea1"
+          rows="3"
+          placeholder="লেখার জন্য এখানে ক্লিক করুন..."
+        ></a>
+        {% else %}
+        <label for="exampleFormControlTextarea1" class="form-label">প্রিয় মুক্তচিন্তক: <span><a type="button" data-bs-toggle="modal" data-bs-target="#loginModal">লগইন করুন</a></span></label>
+        <a class="navbar-brand"  data-bs-toggle="modal" data-bs-target="#loginModal">
+        <input
+          class="form-control"
+          id="exampleFormControlTextarea1"
+          rows="3"
+          placeholder="লেখার জন্য এখানে ক্লিক করুন..."
+        ></a>
+        {% endif %}
+      </div>
+      <div class="card text-center bookpage" style="padding-bottom: 0px; padding-top: 0px;
+      background-color: #DDFAB2; margin-bottom: 5px;">
+          <p style="padding:2px; margin-bottom:0px; font-size:20px">
+            Books store
+          </p>
+      </div>  
+      <div class="owl-carousels owl-theme">
+        {% for eachbook in books  %}
+        <div class="item">
+          <div class="card mb-3" style="max-width: 540px;">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="{{eachbook.img.url}}" class="img-fluid rounded-start" alt="..." >
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title">{{eachbook.title}}</h5>
+                  <p class="card-text" style="margin-bottom:2px;">{{eachbook.authname}}</p>
+                  <p class="card-text" style="margin-bottom:2px;"><small class="text-muted">download :{{eachbook.download}} | price :Rs <s>{{eachbook.actual_price}}</s>  {{eachbook.on_price}}</small></p>
+                  <div class="container-fluid gap-3" style="display: flex; padding-left:7px; justify-content:center;">
+                      <form method= "POST" action="{% url 'bookdownload' %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                          <button class="btn btn-outline-info" type="submit"><input name="bookfile" value="{{ eachbook.pdf }}"
+                          hidden>download</button>
+                      </form>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="card text-center bookpage" style="padding-bottom: 0px; padding-top: 0px;
+      margin-bottom: 5px;">
+          <p style="padding:2px; margin-bottom:0px; font-size:20px">
+            Recent Writings
+          </p>
+      </div> 
+      <div class="row">
+        {% for post in blogs  %}
+            <div class="col-lg-6 col-md-6 mb-2">
+                <a href="/blogs/blogread/{{ post.id }}" class="btn" role="button" style="width:100%;">
+                  <div class="card shadow border">
+                      <div class="card-header ">
+                          <div class="" style="display:flex; height:35px; margin-bottom:7px;">
+                          <h5 class="blogtitle">{{ post.title }}  -<small>{{ post.author }}</small></h5>
+                          </div>
+                          <small class="blogmeta"><span>{{ post.pub_date.date }}</span> | {{post.category}} | views:{{ post.views}} | likes:{{ post.likes }} | share: {{post.share}} | comments:{{post.comments}}</small>
+                      </div>
+                      <div class="card-body">
+                          <div class="d-inline-block card-text text-truncate text-wrap" style="max-width: 300px; max-height:110px">{{ post.content|safe }} </div>
+                      </div>
+                  </div>
+                </a>
+      </div>
+      {% endfor %}
+    </div>
+    </div>
+    
+    <div class="col-sm-4">
+      <div class="rec-writing" style="background-color:#B4EB66; text-align:center; border-radius:4px;">
+        <h4>
+          Latest Magazine
+        </h4>                   
+      </div>
+      {% for lastmag in lastmag %}
+      <div class=" row g-0 bg-white mb-2" >
+        <div class="col-md-4">
+                <img src="{{lastmag.img.url}}" class="img-fluid rounded-start" alt="..." >
+        </div>
+        <div class="col-md-8">
+                <div class="card-body" style="padding-left:5px;">
+                  <h5 class="card-title">{{lastmag.title}}</h5>
+                  <p class="card-text" style="margin-bottom:2px;">{{lastmag.description}}</p>
+                  <p class="card-text" style="margin-bottom:2px;"><small class="text-muted">download :{{lastmag.download}} | price :Rs-{{lastmag.price}} </small></p>
+                  <div class="container-fluid gap-3" style="display: flex; padding-left:7px; justify-content:center;">
+                      <form method= "POST" action="{% url 'pdfdownload' %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                          <button class="btn btn-outline-info" type="submit"><input name="pdffile" value="{{ lastmag.pdffile }}"
+                          hidden>download</button>
+                      </form>
+                    </div>
+                </div>
+          </div>
+          {% endfor %}
+        
+      </div>
+      <div class="rec-writing" style="background-color:#c48edf; text-align:center; border-radius:4px;">
+        <h4>
+          Popular Writings
+        </h4>                   
+      </div>
+      <div>
+      {% for post in  popblogs  %}
+      <a href="/blogs/blogread/{{ post.id }}" class="btn" role="button" style="width:100%;">
+        <div class="mb-2">
+            <div class="card shadow border">
+                <div class="card-header">
+                    <div style="display:flex; height:35px; margin-bottom:7px;">
+                    <h5 class="blogtitle">{{ post.title }}  -<small>{{ post.author }}</small></h5>
+                    </div>
+                    <small class="blogmeta"><span>{{ post.pub_date.date }}</span> | {{post.category}} | views: {{ post.views }} | likes:{{ post.likes }} | share: {{post.share}} | comments:{{post.comments}}</small>
+                </div> 
+                <div class="card-body">
+                    <div class="d-inline-block card-text text-truncate text-wrap" style="max-width: 300px; max-height:110px">{{ post.content|safe }} </div>
+                </div>
+            </div>
+        </div>
+        </a>
+        {% endfor %}
+        </div>
+        <a href="/blogs/blogview" class="btn btn-secondary" role="button">Load More...</a>
+    </div>
+  </div>
+  {% comment %} grid {% endcomment %}
+</div>
+
+{% endblock body %} 
+
+{% block script %}
+<script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+  crossorigin="anonymous"
+></script> 
+<script src="{% static "js/owl.carousel.min.js" %}"></script>
+<script>
+  $('.owl-carousel').owlCarousel({
+    stagePadding: 50,
+    loop:true,
+    margin:10,
+    nav:false,
+    dots:false,
+    autoplay: true,
+    responsive:{
+        0:{
+            items:1
+        },
+        600:{
+            items:2
+        },
+        1000:{
+            items:4
+        }
+      }
+  })
+</script>
+<script>
+  $('.owl-carousels').owlCarousel({
+    stagePadding: 50,
+    loop:true,
+    margin:10,
+    axis:'x',
+    
+    responsive:{
+        0:{
+            items:1
+        },
+        600:{
+            items:2
+        },
+        1000:{
+            items:2
+        }
+      }
+  })
+
+</script>
+
+{% endblock script %}
